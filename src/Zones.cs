@@ -11,7 +11,7 @@ public partial class Zones : BasePlugin
     public override void Load(bool isReload)
     {
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
-        AddTimer(0.1f, Timer_Repeat, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
+        AddTimer(0.1f, Timer_Repeat, TimerFlags.REPEAT);
 
         if (!isReload)
             return;
@@ -102,6 +102,6 @@ public partial class Zones : BasePlugin
 
     private static bool IsValidPlayer(CCSPlayerController? player)
     {
-        return player != null && player is { IsValid: true, PawnIsAlive: true, IsBot: false, IsHLTV: false };
+        return player != null && player is { IsValid: true, Connected: PlayerConnectedState.PlayerConnected, PawnIsAlive: true, IsBot: false, IsHLTV: false };
     }
 }

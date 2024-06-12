@@ -1,0 +1,104 @@
+name: Build and Release
+
+on: push
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: '8.0.x'
+
+            - name: Restore dependencies
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build -c Release
+
+    release:
+        needs: build
+        runs-on: ubuntu-latest
+        permissions: write-all
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: '8.0.x'
+
+            - name: Restore dependencies
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build -c Release
+
+            - name: Create Directories
+              run: |
+                mkdir -p plugin/plugins/Zones
+                mkdir -p plugin/shared/RetakesPluginShared
+                mkdir -p plugin/configs/plugins/Zones
+
+            - name: Move Files
+              run: |
+                mv ./src/bin/Release/net8.0/* ./plugin/plugins/Zones
+                mv ./RetakesPluginShared/bin/Release/net8.0/* ./plugin/shared/RetakesPluginShared
+                mv ./config/* plugin/configs/plugins/Zones
+
+            - name: Remove .API
+              run: |
+                rm ./plugin/plugins/Zones/RetakesPluginShared.*
+
+            - name: Zip
+              run: |
+                cd plugin/
+                zip -r Zones-${{ github.sha }}.zip .
+
+            - name: Extract version and create tag
+              id: extract_version
+              run: |
+                version=$(grep -oP 'public override string ModuleVersion => "\K(.*)(?=";)' ./src/Globals.cs)
+                echo "Version found: $version"
+                git config --global user.email "actions@github.com"
+                git config --global user.name "GitHub Actions"
+                git tag $version
+                git push origin $version
+                echo "::set-output name=version::$version"
+
+            - name: Publish
+              uses: actions/upload-artifact@v4
+              with:
+                name: Zones-${{ github.sha }}
+                path: plugin
+
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ steps.extract_version.outputs.version }}
+                  release_name: ${{ steps.extract_version.outputs.version }}
+                  body: |
+                      This is an automated release.
+                  draft: false
+                  prerelease: false
+
+            - name: Upload Release Asset
+              id: upload_release_asset
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./plugin/Zones-${{ github.sha }}.zip
+                  asset_name: Zones.zip
+                  asset_content_type: application/zip

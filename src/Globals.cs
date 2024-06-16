@@ -7,7 +7,7 @@ namespace Zones;
 public partial class Zones
 {
     public override string ModuleName => "Retakes-Zones";
-    public override string ModuleVersion => "1.0.1";
+    public override string ModuleVersion => "1.0.2";
     public override string ModuleAuthor => "https://github.com/oscar-wos/Retakes-Zones";
     private static PluginCapability<IRetakesPluginEventSender> RetakesPluginEventSenderCapability { get; } = new("retakes_plugin:event_sender");
 

@@ -6,9 +6,9 @@ namespace Zones;
 
 public class Zone(Bombsite bombsite, ZoneType type, CsTeam[] teams, float[] minPoint, float[] maxPoint)
 {
-    public Bombsite Bombsite { get; init; } = bombsite;
-    public ZoneType Type { get; init; } = type;
-    public CsTeam[] Teams { get; init; } = teams;
+    public Bombsite Bombsite { get; } = bombsite;
+    public ZoneType Type { get; } = type;
+    public CsTeam[] Teams { get; } = teams;
     private float[] MinPoint { get; } = minPoint;
     private float[] MaxPoint { get; } = maxPoint;
 

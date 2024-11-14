@@ -10,6 +10,7 @@ public partial class Zones : BasePlugin
         RegisterListener<Listeners.OnTick>(OnTick);
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
         RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
+        RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
 
         if (!isReload)
             return;
@@ -20,5 +21,10 @@ public partial class Zones : BasePlugin
     public override void OnAllPluginsLoaded(bool isReload)
     {
         RetakesPluginEventSenderCapability.Get()!.RetakesPluginEventHandlers += OnRetakesEvent;
+    }
+
+    public override void Unload(bool isReload)
+    {
+        RetakesPluginEventSenderCapability.Get()!.RetakesPluginEventHandlers -= OnRetakesEvent;
     }
 }

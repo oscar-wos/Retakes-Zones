@@ -12,10 +12,8 @@ public partial class Zones : BasePlugin
         RegisterListener<Listeners.OnClientPutInServer>(OnClientPutInServer);
         RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
 
-        if (!isReload)
-            return;
-
-        LoadJson(Server.MapName);
+        if (isReload)
+            ReloadPlugin();
     }
 
     public override void OnAllPluginsLoaded(bool isReload)
@@ -26,5 +24,16 @@ public partial class Zones : BasePlugin
     public override void Unload(bool isReload)
     {
         RetakesPluginEventSenderCapability.Get()!.RetakesPluginEventHandlers -= OnRetakesEvent;
+    }
+
+    private void ReloadPlugin()
+    {
+        LoadJson(Server.MapName);
+
+        Server.NextFrame(() =>
+        {
+            foreach (var controller in Utilities.GetPlayers().Where(c => c is { IsValid: true }))
+                _playerData[controller] = new PlayerData();
+        });
     }
 }

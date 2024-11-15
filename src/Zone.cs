@@ -14,6 +14,6 @@ public class Zone(Bombsite bombsite, ZoneType type, CsTeam[] teams, float[] minP
 
     public bool IsInZone(Vector point)
     {
-        return point.X >= MinPoint[0] && point.X <= MaxPoint[0] && point.Y >= MinPoint[1] && point.Y <= MaxPoint[1] && point.Z >= MinPoint[2] && point.Z <= MaxPoint[2];
+        return point.X >= MinPoint[0] && point.X <= MaxPoint[0] && point.Y >= MinPoint[1] && point.Y <= MaxPoint[1] && point.Z + 36 >= MinPoint[2] && point.Z + 36 <= MaxPoint[2];
     }
 }

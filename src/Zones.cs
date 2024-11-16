@@ -32,8 +32,8 @@ public partial class Zones : BasePlugin
 
         Server.NextFrame(() =>
         {
-            foreach (var controller in Utilities.GetPlayers().Where(c => c is { IsValid: true }))
-                _playerData[controller] = new PlayerData();
+            foreach (var player in Utilities.GetPlayers().Where(p => p is { IsValid: true }))
+                _playerData[player] = new PlayerData();
         });
     }
 }

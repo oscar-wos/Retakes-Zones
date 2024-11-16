@@ -7,18 +7,20 @@ public partial class Zones
 {
     private void OnTick()
     {
-        foreach (var controller in Utilities.GetPlayers().Where(c => c is { IsValid: true, PawnIsAlive: true }))
+        foreach (var player in Utilities.GetPlayers().Where(p => p is { IsValid: true, PawnIsAlive: true }))
         {
-            if (controller.PlayerPawn.Value == null || !_playerData.TryGetValue(controller, out var playerData))
+            var pos = player.PlayerPawn.Value?.AbsOrigin;
+
+            if (pos == null || !_playerData.TryGetValue(player, out var playerData))
                 continue;
 
             foreach (var zone in playerData.Zones)
             {
-                var isInZone = zone.IsInZone(controller.PlayerPawn.Value.AbsOrigin!);
+                var isInZone = zone.IsInZone(pos);
 
                 if (zone.Type == ZoneType.Red && isInZone)
                 {
-                    controller.Bounce();
+                    player.PlayerPawn.Value!.Bounce();
                     continue;
                 }
 
@@ -35,7 +37,7 @@ public partial class Zones
                         playerData.GreenZones.Remove(zone);
 
                         if (playerData.GreenZones.Count == 0)
-                            controller.Bounce();
+                            player.PlayerPawn.Value!.Bounce();
 
                         break;
                 }
@@ -50,21 +52,21 @@ public partial class Zones
 
     private void OnClientPutInServer(int playerSlot)
     {
-        var controller = Utilities.GetPlayerFromSlot(playerSlot);
+        var player = Utilities.GetPlayerFromSlot(playerSlot);
 
-        if (controller == null || !controller.IsValid)
+        if (player == null || !player.IsValid)
             return;
 
-        _playerData[controller] = new PlayerData();
+        _playerData[player] = new PlayerData();
     }
 
     private void OnClientDisconnect(int playerSlot)
     {
-        var controller = Utilities.GetPlayerFromSlot(playerSlot);
+        var player = Utilities.GetPlayerFromSlot(playerSlot);
 
-        if (controller == null || !controller.IsValid)
+        if (player == null || !player.IsValid)
             return;
 
-        _playerData.Remove(controller);
+        _playerData.Remove(player);
     }
 }

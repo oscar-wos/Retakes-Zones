@@ -5,7 +5,7 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zones", "src\Zones.csproj", "{281D1A18-97D7-494A-9EA2-322AF4BC7057}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetakesPluginShared", "RetakesPluginShared\RetakesPluginShared.csproj", "{17DC10DD-4F4F-4D66-953A-29D641390D4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetakesPluginShared", "cs2-retakes\RetakesPluginShared\RetakesPluginShared.csproj", "{17DC10DD-4F4F-4D66-953A-29D641390D4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

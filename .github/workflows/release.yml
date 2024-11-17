@@ -57,7 +57,7 @@ jobs:
             - name: Move Files
               run: |
                 mv ./src/bin/Release/net8.0/* ./plugin/plugins/Zones
-                mv ./RetakesPluginShared/bin/Release/net8.0/* ./plugin/shared/RetakesPluginShared
+                mv ./cs2-retakes/RetakesPluginShared/bin/Release/net8.0/* ./plugin/shared/RetakesPluginShared
                 mv ./config/* plugin/configs/plugins/Zones
 
             - name: Remove .API

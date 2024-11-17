@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CounterStrikeSharp.API" Version="*" ExcludeAssets="runtime" />
-		<ProjectReference Include="..\RetakesPluginShared\RetakesPluginShared.csproj" />
+		<ProjectReference Include="..\cs2-retakes\RetakesPluginShared\RetakesPluginShared.csproj" />
 	</ItemGroup>
 
 </Project>

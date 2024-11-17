@@ -1,4 +1,4 @@
-﻿namespace Zones;
+﻿namespace Zones.Enums;
 
 public enum ZoneType
 {

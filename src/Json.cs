@@ -1,30 +1,30 @@
 ﻿using System.Text.Json;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Logging;
 using RetakesPluginShared.Enums;
+using Zones.Enums;
 
 namespace Zones;
 
 public partial class Zones
 {
-    public void LoadJson(string mapName)
+    private void LoadJson(string mapName)
     {
         _zones.Clear();
         var path = $"../../csgo/addons/counterstrikesharp/configs/plugins/Zones/{mapName}.json";
 
         if (!File.Exists(path))
-        {
-            Logger.LogError($"File {path} does not exist.");
             return;
-        }
 
         var json = File.ReadAllText(path);
         var obj = JsonSerializer.Deserialize<JsonBombsite>(json);
 
-        foreach (var zone in obj!.a)
+        if (obj == null)
+            return;
+
+        foreach (var zone in obj.a)
             AddZone(Bombsite.A, zone);
 
-        foreach (var zone in obj!.b)
+        foreach (var zone in obj.b)
             AddZone(Bombsite.B, zone);
 
         return;
@@ -35,8 +35,8 @@ public partial class Zones
                 bombsite,
                 (ZoneType)zone.type,
                 zone.teams.Select(t => (CsTeam)Enum.ToObject(typeof(CsTeam), t)).ToArray(),
-                new Vector(Math.Min(zone.x[0], zone.y[0]), Math.Min(zone.x[1], zone.y[1]), Math.Min(zone.x[2], zone.y[2])),
-                new Vector(Math.Max(zone.x[0], zone.y[0]), Math.Max(zone.x[1], zone.y[1]), Math.Max(zone.x[2], zone.y[2]))
+                [Math.Min(zone.x[0], zone.y[0]), Math.Min(zone.x[1], zone.y[1]), Math.Min(zone.x[2], zone.y[2])],
+                [Math.Max(zone.x[0], zone.y[0]), Math.Max(zone.x[1], zone.y[1]), Math.Max(zone.x[2], zone.y[2])]
             ));
         }
     }
@@ -44,8 +44,8 @@ public partial class Zones
 
 public class JsonBombsite
 {
-    public required JsonZone[] a { get; set; }
-    public required JsonZone[] b { get; set; }
+    public required JsonZone[] a { get; init; }
+    public required JsonZone[] b { get; init; }
 }
 
 public class JsonZone

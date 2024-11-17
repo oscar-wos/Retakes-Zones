@@ -1,18 +1,19 @@
 ﻿using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPluginShared.Enums;
+using Zones.Enums;
 
 namespace Zones;
 
-public class Zone(Bombsite bombsite, ZoneType type, CsTeam[] teams, Vector minPoint, Vector maxPoint)
+public class Zone(Bombsite bombsite, ZoneType type, CsTeam[] teams, float[] minPoint, float[] maxPoint)
 {
-    public Bombsite Bombsite { get; init; } = bombsite;
-    public ZoneType Type { get; init; } = type;
-    public CsTeam[] Teams { get; init; } = teams;
-    public Vector MinPoint { get; init; } = minPoint;
-    public Vector MaxPoint { get; init; } = maxPoint;
+    public Bombsite Bombsite { get; } = bombsite;
+    public ZoneType Type { get; } = type;
+    public CsTeam[] Teams { get; } = teams;
+    private float[] MinPoint { get; } = minPoint;
+    private float[] MaxPoint { get; } = maxPoint;
 
     public bool IsInZone(Vector point)
     {
-        return point.X >= MinPoint.X && point.X <= MaxPoint.X && point.Y >= MinPoint.Y && point.Y <= MaxPoint.Y && point.Z >= MinPoint.Z && point.Z <= MaxPoint.Z;
+        return point.X >= MinPoint[0] && point.X <= MaxPoint[0] && point.Y >= MinPoint[1] && point.Y <= MaxPoint[1] && point.Z + 36 >= MinPoint[2] && point.Z + 36 <= MaxPoint[2];
     }
 }

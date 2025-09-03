@@ -9,36 +9,55 @@ public partial class Zones
 {
     private void LoadJson(string mapName)
     {
-        _zones.Clear();
-        var path = $"../../csgo/addons/counterstrikesharp/configs/plugins/Zones/{mapName}.json";
+        for (int i = 0; i < Enum.GetValues(typeof(Bombsite)).Length; i++)
+        {
+            _zones[i] = [];
+        }
+
+        string path = $"../../csgo/addons/counterstrikesharp/configs/plugins/Zones/{mapName}.json";
 
         if (!File.Exists(path))
-            return;
-
-        var json = File.ReadAllText(path);
-        var obj = JsonSerializer.Deserialize<JsonBombsite>(json);
-
-        if (obj == null)
-            return;
-
-        foreach (var zone in obj.a)
-            AddZone(Bombsite.A, zone);
-
-        foreach (var zone in obj.b)
-            AddZone(Bombsite.B, zone);
-
-        return;
-
-        void AddZone(Bombsite bombsite, JsonZone zone)
         {
-            _zones.Add(new Zone(
-                bombsite,
-                (ZoneType)zone.type,
-                zone.teams.Select(t => (CsTeam)Enum.ToObject(typeof(CsTeam), t)).ToArray(),
-                [Math.Min(zone.x[0], zone.y[0]), Math.Min(zone.x[1], zone.y[1]), Math.Min(zone.x[2], zone.y[2])],
-                [Math.Max(zone.x[0], zone.y[0]), Math.Max(zone.x[1], zone.y[1]), Math.Max(zone.x[2], zone.y[2])]
-            ));
+            return;
         }
+
+        string json = File.ReadAllText(path);
+        JsonBombsite? obj = JsonSerializer.Deserialize<JsonBombsite>(json);
+
+        if (obj is null)
+        {
+            return;
+        }
+
+        foreach (JsonZone jsonZone in obj.a)
+        {
+            AddZone(Bombsite.A, jsonZone);
+        }
+
+        foreach (JsonZone jsonZone in obj.b)
+        {
+            AddZone(Bombsite.B, jsonZone);
+        }
+    }
+
+    private void AddZone(Bombsite bombsite, JsonZone jsonZone)
+    {
+        Zone zone = new(
+            (ZoneType)jsonZone.type,
+            [.. jsonZone.teams.Select(t => (CsTeam)Enum.ToObject(typeof(CsTeam), t))],
+            [
+                Math.Min(jsonZone.x[0], jsonZone.y[0]),
+                Math.Min(jsonZone.x[1], jsonZone.y[1]),
+                Math.Min(jsonZone.x[2], jsonZone.y[2]),
+            ],
+            [
+                Math.Max(jsonZone.x[0], jsonZone.y[0]),
+                Math.Max(jsonZone.x[1], jsonZone.y[1]),
+                Math.Max(jsonZone.x[2], jsonZone.y[2]),
+            ]
+        );
+
+        _zones[(int)bombsite].Add(zone);
     }
 }
 

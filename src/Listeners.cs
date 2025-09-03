@@ -1,5 +1,8 @@
 ﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 using Zones.Enums;
+using Zones.Extensions;
 
 namespace Zones;
 
@@ -7,25 +10,41 @@ public partial class Zones
 {
     private void OnTick()
     {
-        foreach (var player in Utilities.GetPlayers().Where(p => p is { IsValid: true, PawnIsAlive: true }))
+        for (int i = 0; i < MAX_PLAYERS; i++)
         {
-            var pos = player.PlayerPawn.Value?.AbsOrigin;
+            PlayerData? playerData = _playerData[i];
+            CCSPlayerController? player = playerData?.Player;
 
-            if (pos == null || !_playerData.TryGetValue(player, out var playerData))
-                continue;
-
-            foreach (var zone in playerData.Zones)
+            if (
+                playerData is null
+                || player is not { IsValid: true, LifeState: (byte)LifeState_t.LIFE_ALIVE }
+                || player.PlayerPawn.Value is not { IsValid: true }
+            )
             {
-                var isInZone = zone.IsInZone(pos);
+                continue;
+            }
+
+            Vector? pos = player.PlayerPawn.Value.AbsOrigin;
+
+            if (pos is null)
+            {
+                continue;
+            }
+
+            foreach (Zone zone in playerData.Zones)
+            {
+                bool isInZone = zone.IsInZone(pos);
 
                 if (zone.Type == ZoneType.Red && isInZone)
                 {
-                    player.PlayerPawn.Value!.Bounce();
+                    player.PlayerPawn.Value.Bounce();
                     continue;
                 }
 
                 if (zone.Type != ZoneType.Green)
+                {
                     continue;
+                }
 
                 switch (isInZone)
                 {
@@ -34,10 +53,12 @@ public partial class Zones
                         break;
 
                     case false when playerData.GreenZones.Contains(zone):
-                        playerData.GreenZones.Remove(zone);
+                        _ = playerData.GreenZones.Remove(zone);
 
                         if (playerData.GreenZones.Count == 0)
+                        {
                             player.PlayerPawn.Value!.Bounce();
+                        }
 
                         break;
                 }
@@ -45,28 +66,19 @@ public partial class Zones
         }
     }
 
-    private void OnMapStart(string mapName)
-    {
-        LoadJson(mapName);
-    }
+    private void OnMapStart(string mapName) => LoadJson(mapName);
 
     private void OnClientPutInServer(int playerSlot)
     {
-        var player = Utilities.GetPlayerFromSlot(playerSlot);
+        CCSPlayerController? player = Utilities.GetPlayerFromSlot(playerSlot);
 
-        if (player == null || !player.IsValid)
+        if (player is not { IsValid: true })
+        {
             return;
+        }
 
-        _playerData[player] = new PlayerData();
+        _playerData[playerSlot] = new PlayerData { Player = player };
     }
 
-    private void OnClientDisconnect(int playerSlot)
-    {
-        var player = Utilities.GetPlayerFromSlot(playerSlot);
-
-        if (player == null || !player.IsValid)
-            return;
-
-        _playerData.Remove(player);
-    }
+    private void OnClientDisconnect(int playerSlot) => _playerData[playerSlot] = null;
 }

@@ -1,16 +1,31 @@
-﻿using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Capabilities;
+﻿using CounterStrikeSharp.API.Core.Capabilities;
 using RetakesPluginShared;
+using RetakesPluginShared.Enums;
 
 namespace Zones;
 
 public partial class Zones
 {
-    public override string ModuleName => "Retakes-Zones";
-    public override string ModuleVersion => "1.1.1";
-    public override string ModuleAuthor => "https://github.com/oscar-wos/Retakes-Zones";
-    private static PluginCapability<IRetakesPluginEventSender> RetakesPluginEventSenderCapability { get; } = new("retakes_plugin:event_sender");
+    private const int MAX_PLAYERS = 64;
 
-    private readonly List<Zone> _zones = [];
-    private readonly Dictionary<CCSPlayerController, PlayerData> _playerData = [];
+    public override string ModuleName => "Retakes-Zones";
+    public override string ModuleVersion => "1.2.0";
+    public override string ModuleAuthor => "https://github.com/oscar-wos/Retakes-Zones";
+
+    private static readonly PluginCapability<IRetakesPluginEventSender> _retakesEventSenderCapability =
+        new("retakes_plugin:event_sender");
+
+    private static readonly PlayerData?[] _playerData = new PlayerData?[MAX_PLAYERS];
+
+    private static readonly List<Zone>[] _zones = new List<Zone>[
+        Enum.GetValues(typeof(Bombsite)).Length
+    ];
+
+    static Zones()
+    {
+        for (int i = 0; i < Enum.GetValues(typeof(Bombsite)).Length; i++)
+        {
+            _zones[i] = [];
+        }
+    }
 }

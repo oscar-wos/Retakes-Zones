@@ -13,18 +13,16 @@ public partial class Zones : BasePlugin
         RegisterListener<Listeners.OnClientDisconnect>(OnClientDisconnect);
 
         if (isReload)
+        {
             ReloadPlugin();
+        }
     }
 
-    public override void OnAllPluginsLoaded(bool isReload)
-    {
-        RetakesPluginEventSenderCapability.Get()!.RetakesPluginEventHandlers += OnRetakesEvent;
-    }
+    public override void OnAllPluginsLoaded(bool isReload) =>
+        _retakesEventSenderCapability.Get()!.RetakesPluginEventHandlers += OnRetakesEvent;
 
-    public override void Unload(bool isReload)
-    {
-        RetakesPluginEventSenderCapability.Get()!.RetakesPluginEventHandlers -= OnRetakesEvent;
-    }
+    public override void Unload(bool isReload) =>
+        _retakesEventSenderCapability.Get()!.RetakesPluginEventHandlers -= OnRetakesEvent;
 
     private void ReloadPlugin()
     {
@@ -32,8 +30,14 @@ public partial class Zones : BasePlugin
 
         Server.NextFrame(() =>
         {
-            foreach (var player in Utilities.GetPlayers().Where(p => p is { IsValid: true }))
-                _playerData[player] = new PlayerData();
+            foreach (
+                CCSPlayerController player in Utilities
+                    .GetPlayers()
+                    .Where(p => p is { IsValid: true })
+            )
+            {
+                _playerData[player.Slot] = new PlayerData() { Player = player };
+            }
         });
     }
 }

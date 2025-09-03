@@ -3,5 +3,5 @@
 public enum ZoneType
 {
     Green,
-    Red
+    Red,
 }

@@ -17,6 +17,6 @@ public static class PlayerPawnExtension
 
         vel *= -350 / (float)speed;
         vel.Z = vel.Z <= 0 ? 150 : Math.Min(vel.Z, 150);
-        playerPawn.Teleport(playerPawn.AbsOrigin, playerPawn.EyeAngles, vel);
+        playerPawn.Teleport(playerPawn.AbsOrigin, null, vel);
     }
 }
